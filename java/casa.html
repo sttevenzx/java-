@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flor Animada con Three.js</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.js"></script>
+    <script>
+        // Configuración básica
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Crear el centro de la flor
+        const centerGeometry = new THREE.ConeGeometry(0.5, 1, 32);
+        const centerMaterial = new THREE.MeshPhongMaterial({ color: 0xFFFF00 });
+        const center = new THREE.Mesh(centerGeometry, centerMaterial);
+        center.position.y = 1; // Elevar el centro de la flor
+        scene.add(center);
+
+        // Crear los pétalos
+        const petalMaterial = new THREE.MeshPhongMaterial({ color: 0xFF1493 });
+        const petalGeometry = new THREE.CylinderGeometry(0.3, 0.1, 1, 32);
+
+        for (let i = 0; i < 6; i++) {
+            const petal = new THREE.Mesh(petalGeometry, petalMaterial);
+            petal.rotation.z = Math.PI / 2; // Alinear los pétalos
+            petal.position.y = 0.5; // Colocar los pétalos un poco más abajo
+            petal.rotation.y = i * Math.PI / 3; // Distribuir los pétalos en círculo
+            scene.add(petal);
+        }
+
+        // Agregar luz
+        const light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(5, 5, 5);
+        scene.add(light);
+
+        // Terreno
+        const groundGeometry = new THREE.PlaneGeometry(500, 500);
+        const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x228B22 });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2; // Girar el plano
+        scene.add(ground);
+
+        // Posicionar la cámara
+        camera.position.z = 5;
+
+        // Control de la cámara
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        // Función de animación
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotar el centro de la flor
+            center.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+        }
+
+        // Manejar el cambio de tamaño de la ventana
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
